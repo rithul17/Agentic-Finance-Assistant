@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+from fastapi.responses import FileResponse
 import shutil
 import os
 import uuid
@@ -35,4 +36,12 @@ async def upload_audio(file: UploadFile = File(...)):
         "message": "Audio file received successfully.",
         "filename": unique_filename
     })
+
+@app.get("/get-tts-audio/")
+async def get_tts_audio():
+    file_path = "output.wav"  # or the full path if needed
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="TTS audio not found.")
+    
+    return FileResponse(file_path, media_type="audio/wav", filename="output.wav")
 
